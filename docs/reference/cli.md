@@ -1,0 +1,1 @@
+::: mkdocstrings_javascript.cli
