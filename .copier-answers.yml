@@ -12,7 +12,7 @@ project_description: A Javascript handler for mkdocstrings.
 project_name: Javascript for mkdocstrings
 python_package_command_line_name: mkdocstrings-javascript
 python_package_distribution_name: mkdocstrings-javascript
-python_package_import_name: mkdocstrings_javascript
+python_package_import_name: mkdocstrings
 repository_name: javascript
 repository_namespace: mkdocstrings
 repository_provider: github.com

@@ -1,1 +1,1 @@
-::: mkdocstrings_javascript.cli
+::: mkdocstrings.cli

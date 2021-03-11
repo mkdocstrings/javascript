@@ -47,6 +47,6 @@ plugins:
     html_report_dir: build/coverage
 - mkdocstrings:
     watch:
-    - src/mkdocstrings_javascript
+    - src/mkdocstrings
 - macros:
     module_name: docs/macros

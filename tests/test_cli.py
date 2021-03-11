@@ -2,7 +2,7 @@
 
 import pytest
 
-from mkdocstrings_javascript import cli
+from mkdocstrings import cli
 
 
 def test_main():
