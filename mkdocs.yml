@@ -11,7 +11,7 @@ nav:
   - Credits: credits.md
   - License: license.md
 - Code Reference:
-  - cli.py: reference/cli.md
+  - javascript.py: reference/javascript.md
 - Development:
   - Contributing: contributing.md
   - Code of Conduct: code_of_conduct.md
