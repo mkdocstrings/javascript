@@ -1,12 +1,12 @@
 # Changes here will be overwritten by Copier
 _commit: 0.2.1
 _src_path: gh:pawamoy/copier-poetry
-author_email: thurston.sexton@nist.gov
+author_email: thurston.b.sexton@gmail.com
 author_fullname: Thurston Sexton
 author_username: tbsexton
 copyright_date: '2021'
 copyright_holder: Thurston Sexton
-copyright_holder_email: thurston.sexton@nist.gov
+copyright_holder_email: thurston.b.sexton@gmail.com
 copyright_license: ISC License
 project_description: A Javascript handler for mkdocstrings.
 project_name: Javascript for mkdocstrings
