@@ -1,6 +1,14 @@
 """Tests for the different themes we claim to support."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import pytest
+
+if TYPE_CHECKING:
+    from markdown import Markdown
+    from mkdocstrings.plugin import MkdocstringsPlugin
 
 
 @pytest.mark.parametrize(
@@ -18,14 +26,15 @@ import pytest
         # TODO: add identifiers to this list!
     ],
 )
-def test_render_themes_templates_python(identifier, plugin):
+def test_render_themes_templates_python(identifier: str, plugin: MkdocstringsPlugin, ext_markdown: Markdown) -> None:
     """Test rendering of a given theme's templates.
 
     Parameters:
         identifier: Parametrized identifier.
-        plugin: Pytest fixture: [tests.conftest.fixture_plugin][].
+        plugin: Pytest fixture (see conftest.py).
+        ext_markdown: Pytest fixture (see conftest.py).
     """
     handler = plugin.handlers.get_handler("javascript")
-    handler.renderer._update_env(plugin.md, plugin.handlers._config)  # noqa: WPS437
-    data = handler.collector.collect(identifier, {})
-    handler.renderer.render(data, {})
+    handler._update_env(ext_markdown, plugin.handlers._config)
+    data = handler.collect(identifier, {})
+    handler.render(data, {})

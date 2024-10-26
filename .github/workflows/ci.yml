@@ -2,11 +2,9 @@ name: ci
 
 on:
   push:
-    branches:
-      - master
   pull_request:
     branches:
-      - master
+    - main
 
 defaults:
   run:
@@ -16,6 +14,7 @@ env:
   LANG: en_US.utf-8
   LC_ALL: en_US.utf-8
   PYTHONIOENCODING: UTF-8
+  PYTHON_VERSIONS: ""
 
 jobs:
 
@@ -25,47 +24,64 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Set up PDM
-      uses: pdm-project/setup-pdm@v2.6
+      uses: actions/checkout@v4
       with:
-        python-version: "3.8"
+        fetch-depth: 0
+        fetch-tags: true
 
-    - name: Set cache variables
-      id: set_variables
-      run: |
-        echo "::set-output name=PIP_CACHE::$(pip cache dir)"
-        echo "::set-output name=PDM_CACHE::$(pdm config cache_dir)"
-
-    - name: Set up cache
-      uses: actions/cache@v2
+    - name: Setup Python
+      uses: actions/setup-python@v5
       with:
-        path: |
-          ${{ steps.set_variables.outputs.PIP_CACHE }}
-          ${{ steps.set_variables.outputs.PDM_CACHE }}
-        key: checks-cache
+        python-version: "3.12"
 
-    - name: Resolving dependencies
-      run: pdm lock
+    - name: Setup uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        enable-cache: true
+        cache-dependency-glob: pyproject.toml
 
     - name: Install dependencies
-      run: pdm install -G duty -G docs -G quality -G typing -G security
+      run: make setup
 
     - name: Check if the documentation builds correctly
-      run: pdm run duty check-docs
+      run: make check-docs
 
     - name: Check the code quality
-      run: pdm run duty check-quality
+      run: make check-quality
 
     - name: Check if the code is correctly typed
-      run: pdm run duty check-types
+      run: make check-types
 
-    - name: Check for vulnerabilities in dependencies
-      run: pdm run duty check-dependencies
+    - name: Check for breaking changes in the API
+      run: make check-api
+
+  exclude-test-jobs:
+    runs-on: ubuntu-latest
+    outputs:
+      jobs: ${{ steps.exclude-jobs.outputs.jobs }}
+    steps:
+    - id: exclude-jobs
+      run: |
+        if ${{ github.repository_owner == 'pawamoy-insiders' }}; then
+          echo 'jobs=[
+            {"os": "macos-latest"},
+            {"os": "windows-latest"},
+            {"python-version": "3.10"},
+            {"python-version": "3.11"},
+            {"python-version": "3.12"},
+            {"python-version": "3.13"},
+            {"python-version": "3.14"}
+          ]' | tr -d '[:space:]' >> $GITHUB_OUTPUT
+        else
+          echo 'jobs=[
+            {"os": "macos-latest", "resolution": "lowest-direct"},
+            {"os": "windows-latest", "resolution": "lowest-direct"}
+          ]' | tr -d '[:space:]' >> $GITHUB_OUTPUT
+        fi
 
   tests:
 
+    needs: exclude-test-jobs
     strategy:
       matrix:
         os:
@@ -73,39 +89,43 @@ jobs:
         - macos-latest
         - windows-latest
         python-version:
-        - "3.7"
-        - "3.8"
         - "3.9"
         - "3.10"
-        - "3.11-dev"
-
+        - "3.11"
+        - "3.12"
+        - "3.13"
+        - "3.14"
+        resolution:
+        - highest
+        - lowest-direct
+        exclude: ${{ fromJSON(needs.exclude-test-jobs.outputs.jobs) }}
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.python-version == '3.14' }}
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2    
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        fetch-tags: true
 
-    - name: Set up PDM
-      uses: pdm-project/setup-pdm@v2.6
+    - name: Setup Python
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
 
-    - name: Set cache variables
-      id: set_variables
-      run: |
-        echo "::set-output name=PIP_CACHE::$(pip cache dir)"
-        echo "::set-output name=PDM_CACHE::$(pdm config cache_dir)"
-
-    - name: Set up cache
-      uses: actions/cache@v2
+    - name: Setup uv
+      uses: astral-sh/setup-uv@v3
       with:
-        path: |
-          ${{ steps.set_variables.outputs.PIP_CACHE }}
-          ${{ steps.set_variables.outputs.PDM_CACHE }}
-        key: tests-cache-${{ runner.os }}-${{ matrix.python-version }}
+        enable-cache: true
+        cache-dependency-glob: pyproject.toml
+        cache-suffix: py${{ matrix.python-version }}
 
     - name: Install dependencies
-      run: pdm install -G duty -G tests
+      env:
+        UV_RESOLUTION: ${{ matrix.resolution }}
+      run: make setup
 
     - name: Run the test suite
-      run: pdm run duty test
+      run: make test

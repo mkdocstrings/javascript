@@ -1,16 +1,20 @@
 # Changes here will be overwritten by Copier
-_commit: 0.1.0
+_commit: 1.2.1
 _src_path: gh:mkdocstrings/handler-template
-author_email: pawamoy@pm.me
+author_email: dev@pawamoy.fr
 author_fullname: Timothée Mazzucotelli
 author_username: pawamoy
 copyright_date: '2022'
 copyright_holder: Timothée Mazzucotelli
-copyright_holder_email: pawamoy@pm.me
+copyright_holder_email: dev@pawamoy.fr
 copyright_license: ISC License
-language: javascript
+insiders: true
+insiders_email: insiders@pawamoy.fr
+insiders_repository_name: mkdocstrings-javascript
+language: Javascript
 project_description: Javascript handler for mkdocstrings.
 project_name: mkdocstrings-javascript
+public_release: false
 python_package_distribution_name: mkdocstrings-javascript
 python_package_import_name: javascript
 repository_name: javascript

@@ -4,6 +4,14 @@ site_url: "https://mkdocstrings.github.io/javascript"
 repo_url: "https://github.com/mkdocstrings/javascript"
 repo_name: "mkdocstrings/javascript"
 site_dir: "site"
+watch: [mkdocs.yml, README.md, CONTRIBUTING.md, CHANGELOG.md, src/mkdocstrings_handlers]
+copyright: Copyright &copy; 2022 Timothée Mazzucotelli
+edit_uri: edit/main/docs/
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
 
 nav:
 - Home:
@@ -12,21 +20,45 @@ nav:
   - Credits: credits.md
   - License: license.md
 # defer to gen-files + literate-nav
-- Code Reference: reference/
+- API reference:
+  - mkdocstrings-javascript: reference/
 - Development:
   - Contributing: contributing.md
   - Code of Conduct: code_of_conduct.md
   - Coverage report: coverage.md
+- Insiders:
+  - insiders/index.md
+  - Getting started:
+    - Installation: insiders/installation.md
+    - Changelog: insiders/changelog.md
   - mkdocstrings: https://mkdocstrings.github.io/
 
 theme:
   name: material
+  custom_dir: docs/.overrides
   icon:
     logo: material/currency-sign
   features:
+  - announce.dismiss
+  - content.action.edit
+  - content.action.view
+  - content.code.annotate
+  - content.code.copy
+  - content.tooltips
+  - navigation.footer
+  - navigation.indexes
+  - navigation.sections
   - navigation.tabs
+  - navigation.tabs.sticky
   - navigation.top
+  - search.highlight
+  - search.suggest
+  - toc.follow
   palette:
+  - media: "(prefers-color-scheme)"
+    toggle:
+      icon: material/brightness-auto
+      name: Switch to light mode
   - media: "(prefers-color-scheme: light)"
     scheme: default
     primary: teal
@@ -40,54 +72,104 @@ theme:
     accent: lime
     toggle:
       icon: material/weather-night
-      name: Switch to light mode
+      name: Switch to system preference
 
 extra_css:
 - css/material.css
 - css/mkdocstrings.css
+- css/insiders.css
+
+extra_javascript:
+- js/feedback.js
 
 markdown_extensions:
+- attr_list
 - admonition
-- pymdownx.emoji
+- callouts
+- footnotes
+- pymdownx.emoji:
+    emoji_index: !!python/name:material.extensions.emoji.twemoji
+    emoji_generator: !!python/name:material.extensions.emoji.to_svg
 - pymdownx.magiclink
 - pymdownx.snippets:
+    base_path: [!relative $config_dir]
     check_paths: true
 - pymdownx.superfences
 - pymdownx.tabbed:
     alternate_style: true
-- pymdownx.tasklist
+    slugify: !!python/object/apply:pymdownx.slugs.slugify
+      kwds:
+        case: lower
+- pymdownx.tasklist:
+    custom_checkbox: true
 - toc:
     permalink: "¤"
 
 plugins:
 - search
+- markdown-exec
 - gen-files:
     scripts:
-    - docs/gen_credits.py
-    - docs/gen_ref_nav.py
+    - scripts/gen_ref_nav.py
 - literate-nav:
     nav_file: SUMMARY.md
 - coverage
-- section-index
 - mkdocstrings:
     handlers:
       python:
         import:
         - https://docs.python.org/3/objects.inv
         - https://mkdocstrings.github.io/objects.inv
-        selection:
-          docstring_style: google
+        paths: [src]
+        options:
           docstring_options:
-            ignore_init_summary: yes
-        rendering:
-          show_submodules: no
-          merge_init_into_class: yes
-    watch:
-    - src/mkdocstrings_handlers
+            ignore_init_summary: true
+          docstring_section_style: list
+          filters: ["!^_"]
+          heading_level: 1
+          inherited_members: true
+          merge_init_into_class: true
+          separate_signature: true
+          show_root_heading: true
+          show_root_full_path: false
+          show_signature_annotations: true
+          show_source: false
+          show_symbol_type_heading: true
+          show_symbol_type_toc: true
+          signature_crossrefs: true
+          summary: true
+- git-revision-date-localized:
+    enabled: !ENV [DEPLOY, false]
+    enable_creation_date: true
+    type: timeago
+- minify:
+    minify_html: !ENV [DEPLOY, false]
+- group:
+    enabled: !ENV [MATERIAL_INSIDERS, false]
+    plugins:
+    - typeset
 
 extra:
   social:
   - icon: fontawesome/brands/github
     link: https://github.com/pawamoy
+  - icon: fontawesome/brands/mastodon
+    link: https://fosstodon.org/@pawamoy
   - icon: fontawesome/brands/twitter
     link: https://twitter.com/pawamoy
+  - icon: fontawesome/brands/gitter
+    link: https://gitter.im/javascript/community
+  - icon: fontawesome/brands/python
+    link: https://pypi.org/project/mkdocstrings-javascript/
+  analytics:
+    feedback:
+      title: Was this page helpful?
+      ratings:
+        - icon: material/emoticon-happy-outline
+          name: This page was helpful
+          data: 1
+          note: Thanks for your feedback!
+        - icon: material/emoticon-sad-outline
+          name: This page could be improved
+          data: 0
+          note: Let us know how we can improve this page.
