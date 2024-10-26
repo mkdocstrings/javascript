@@ -65,7 +65,7 @@ class JavascriptHandler(BaseHandler):
         Returns:
             Anything you want, as long as you can feed it to the `render` method.
         """
-        raise CollectionError("Implement me!")
+        return {"identifier": identifier}
 
     def render(self, data: CollectorItem, config: Mapping[str, Any]) -> str:  # noqa: ARG002
         """Render a template using provided data and configuration options.
@@ -78,13 +78,10 @@ class JavascriptHandler(BaseHandler):
         Returns:
             The rendered template as HTML.
         """
-        # final_config = {**self.default_config, **config}
-        # heading_level = final_config["heading_level"]
-        # template = self.env.get_template(f"{data...}.html.jinja")
-        # return template.render(
-        #     **{"config": final_config, data...: data, "heading_level": heading_level, "root": True},
-        # )
-        raise PluginError("Implement me!")
+        return (
+            f"<i><b><code>::: {data['identifier']}</code></b><br>The public version of mkdocstrings-javascript is a no-op "
+            "and exist only to allow building docs without errors. Please rely on docs preview in CI.</i>"
+        )
 
     def update_env(self, md: Markdown, config: dict) -> None:
         """Update the Jinja environment with any custom settings/filters/options for this handler.
